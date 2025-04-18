@@ -1,50 +1,73 @@
-#!/bin/bash
+from flask import Flask, request
+import g4f
+import os
 
-echo "Starting setup and launch..."
+app = Flask(__name__)
+CACHE_FILE = "working_provider_model.txt"
 
-# GitHub raw link to gpt.py (replace with your actual repo URL)
-GITHUB_RAW_URL="https://raw.githubusercontent.com/mirabolfazlir/g4fbot/main/gpt.py"
+# Models to try in order of preference
+preferred_models = [
+    "gpt_4_mini",
+    "gpt_4",
+    "gpt_3_5",
+    "deepseek_chat",
+    "palm",
+    "gemini_pro"
+]
 
-# Download gpt.py from GitHub
-echo "Downloading gpt.py from GitHub..."
-curl -o gpt.py $GITHUB_RAW_URL
+# Providers to ignore
+ignored_providers = ["ChatGLM", "Chatai"]
 
-# Function to install Python
-install_python() {
-    echo "Installing Python..."
-    if [ -x "$(command -v apt)" ]; then
-        sudo apt update
-        sudo apt install python3 python3-pip -y
-    elif [ -x "$(command -v yum)" ]; then
-        sudo yum install python3 python3-pip -y
-    else
-        echo "Unsupported package manager. Please install Python manually."
-        exit 1
-    fi
-}
+# Test a specific model/provider combo
+def test_combo(model_name, provider_name, message):
+    try:
+        model = getattr(g4f.models, model_name)
+        provider = getattr(g4f.Provider, provider_name)
+        response = g4f.ChatCompletion.create(
+            model=model,
+            provider=provider,
+            messages=[{"role": "user", "content": message}],
+            timeout=10
+        )
+        return str(response)
+    except Exception:
+        return None
 
-# Check if Python is installed
-if ! command -v python3 &> /dev/null; then
-    install_python
-else
-    echo "Python 3 is already installed."
-fi
+# Try all combinations and find the first working one
+def find_working_combo(message):
+    for model_name in preferred_models:
+        for provider_name in g4f.Provider.__all__:
+            if provider_name in ignored_providers:
+                continue
+            print(f"Testing {model_name} with {provider_name}...")
+            result = test_combo(model_name, provider_name, message)
+            if result:
+                with open(CACHE_FILE, "w") as f:
+                    f.write(f"{model_name}|{provider_name}")
+                return result
+    return "No active model/provider combination found."
 
-# Check if pip is installed
-if ! command -v pip3 &> /dev/null; then
-    echo "pip is not installed. Installing..."
-    sudo apt install python3-pip -y
-else
-    echo "pip is already installed."
-fi
+# Main chat function
+def chat(message):
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, "r") as f:
+                model_name, provider_name = f.read().strip().split("|")
+                result = test_combo(model_name, provider_name, message)
+                if result:
+                    return result
+        except:
+            pass
+    return find_working_combo(message)
 
-# Install required Python packages
-echo "Installing Python dependencies..."
-pip3 install flask
-pip3 install git+https://github.com/xtekky/gpt4free.git
+# Flask endpoint
+@app.route('/chat', methods=['GET'])
+def chat_endpoint():
+    message = request.args.get("message")
+    if not message:
+        return "Missing 'message' parameter", 400
+    return chat(message)
 
-# Run the app in background using nohup
-echo "Starting Flask app with nohup..."
-nohup python3 gpt.py > output.log 2>&1 &
-
-echo "App is running in background. Logs are saved to output.log"
+# Run the app
+if __name__ == '__main__':
+    app.run(port=5000, host="0.0.0.0")
