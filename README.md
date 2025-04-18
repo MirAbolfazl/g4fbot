@@ -32,7 +32,7 @@ This project is a simple Flask-based API that automatically tests multiple GPT m
 Use the provided install script to install everything and start the server:
 
 ```bash
-curl -O https://raw.githubusercontent.com/mirabolfazl/gp4fbot/main/install_and_run.sh
+curl -O https://raw.githubusercontent.com/MirAbolfazl/g4fbot/refs/heads/main/install_and_run.sh
 chmod +x install_and_run.sh
 ./install_and_run.sh
 ```
