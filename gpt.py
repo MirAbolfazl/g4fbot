@@ -5,6 +5,7 @@ import os
 app = Flask(__name__)
 CACHE_FILE = "working_provider_model.txt"
 
+# Models to try in order of preference
 preferred_models = [
     "gpt_4_mini",
     "gpt_4",
@@ -14,6 +15,10 @@ preferred_models = [
     "gemini_pro"
 ]
 
+# Providers to ignore
+ignored_providers = ["ChatGLM", "Chatai"]
+
+# Test a specific model/provider combo
 def test_combo(model_name, provider_name, message):
     try:
         model = getattr(g4f.models, model_name)
@@ -28,19 +33,21 @@ def test_combo(model_name, provider_name, message):
     except Exception:
         return None
 
+# Try all combinations and find the first working one
 def find_working_combo(message):
     for model_name in preferred_models:
         for provider_name in g4f.Provider.__all__:
-            if any(x in provider_name.lower() for x in ["chatglm", "chatai"]):
+            if provider_name in ignored_providers:
                 continue
-            print(f"در حال تست {model_name} با {provider_name}")
+            print(f"Testing {model_name} with {provider_name}...")
             result = test_combo(model_name, provider_name, message)
             if result:
                 with open(CACHE_FILE, "w") as f:
                     f.write(f"{model_name}|{provider_name}")
                 return result
-    return "هیچ مدل و provider فعالی پیدا نشد."
+    return "No active model/provider combination found."
 
+# Main chat function
 def chat(message):
     if os.path.exists(CACHE_FILE):
         try:
@@ -53,12 +60,14 @@ def chat(message):
             pass
     return find_working_combo(message)
 
+# Flask endpoint
 @app.route('/chat', methods=['GET'])
 def chat_endpoint():
     message = request.args.get("message")
     if not message:
-        return "پارامتر message رو وارد کن", 400
+        return "Missing 'message' parameter", 400
     return chat(message)
 
+# Run the app
 if __name__ == '__main__':
     app.run(port=5000, host="0.0.0.0")
