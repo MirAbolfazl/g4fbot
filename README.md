@@ -34,7 +34,7 @@ Use the provided install script to install everything and start the server:
 ```bash
 curl -O https://raw.githubusercontent.com/mirabolfazlir/gp4fbot/main/install_and_run.sh
 chmod +x install_and_run.sh
-./install_and_run.sh
+./install_and_run.sh```
 
 > This script will:
 
