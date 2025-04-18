@@ -3,7 +3,7 @@
 echo "Starting setup and launch..."
 
 # GitHub raw link to gpt.py (replace with your actual repo URL)
-GITHUB_RAW_URL="https://raw.githubusercontent.com/mirabolfazlir/g4fbot/main/gpt.py"
+GITHUB_RAW_URL="https://raw.githubusercontent.com/mirabolfazl/g4fbot/main/gpt.py"
 
 # Download gpt.py from GitHub
 echo "Downloading gpt.py from GitHub..."
