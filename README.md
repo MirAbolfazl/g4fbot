@@ -33,8 +33,7 @@ Use the provided install script to install everything and start the server:
 
 ```bash
 curl -O https://raw.githubusercontent.com/MirAbolfazl/g4fbot/refs/heads/main/install_and_run.sh
-chmod +x install_and_run.sh
-./install_and_run.sh
+chmod +x install_and_run.sh && ./install_and_run.sh
 ```
 
 > This script will:
