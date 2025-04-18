@@ -34,9 +34,10 @@ Use the provided install script to install everything and start the server:
 ```bash
 curl -O https://raw.githubusercontent.com/mirabolfazlir/gp4fbot/main/install_and_run.sh
 chmod +x install_and_run.sh
-./install_and_run.sh```
+./install_and_run.sh
+```
 
-This script will:
+> This script will:
 
 Download gpt.py from GitHub
 
@@ -46,6 +47,37 @@ Install Flask and gpt4free
 
 Launch the Flask app in background via nohup
 
+
+
+
+Manual Installation
+
+# Clone repo
+```bash
+git clone https://github.com/mirabolfazlir/gp4fbot.git
+```
+```bash
+cd gp4fbot
+```
+# Install dependencies
+```bash
+pip install flask
+```
+```bash
+pip install git+https://github.com/xtekky/gpt4free.git
+```
+# Run the app
+```bash
+python3 gpt.py
+```
+File Structure
+
+gpt.py                 # Main Flask app
+install_and_run.sh     # Auto-install and background-run script
+README.md              # Documentation
+
 License
 
 MIT آ© Abolfazl Ebrahimi
+
+---
