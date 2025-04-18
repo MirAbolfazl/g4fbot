@@ -36,3 +36,16 @@ curl -O https://raw.githubusercontent.com/mirabolfazlir/gp4fbot/main/install_and
 chmod +x install_and_run.sh
 ./install_and_run.sh```
 
+This script will:
+
+Download gpt.py from GitHub
+
+Install Python if missing
+
+Install Flask and gpt4free
+
+Launch the Flask app in background via nohup
+
+License
+
+MIT آ© Abolfazl Ebrahimi
