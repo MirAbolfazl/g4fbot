@@ -54,7 +54,7 @@ Manual Installation
 
 # Clone repo
 ```bash
-git clone https://github.com/mirabolfazlir/gp4fbot.git
+git clone https://github.com/mirabolfazl/gp4fbot.git
 ```
 ```bash
 cd gp4fbot
