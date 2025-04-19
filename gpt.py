@@ -8,8 +8,6 @@ app = Flask(__name__)
 CACHE_FILE = "working_provider_model.txt"
 FAST_RESPONSE_THRESHOLD = 1  # seconds
 
-# The number of test attempts is reduced because we are only sending three messages.
-# In fact, for each model, three test messages are sent.
 MAX_TRIES = 1  
 
 preferred_models = [
@@ -24,7 +22,6 @@ ignored_providers = ["ChatGLM", "Chatai", "Dog", "ImageLabs"]
 
 # Function to check if the text contains a link
 def contains_link(text):
-    # This regular expression looks for any standard link in the text
     url_pattern = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\,]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
     return re.search(url_pattern, text) is not None
 
@@ -34,7 +31,6 @@ def test_combo(model_name, provider_name, messages):
         provider = getattr(g4f.Provider, provider_name)
 
         responses = []
-
         for msg in messages:
             if contains_link(msg):
                 print(f"Skipping message with link: {msg}")
@@ -49,14 +45,13 @@ def test_combo(model_name, provider_name, messages):
             )
             elapsed = time.time() - start_time
 
-            # If the response took more than 5 seconds or timed out, skip it
+            # Skip if response is too slow
             if elapsed > 5:
                 print(f"Skipping {provider_name} with {model_name} due to response timeout.")
                 return None
 
             response_str = str(response).strip()
 
-            # If the model's response contains a link, skip this model
             if contains_link(response_str):
                 print(f"Skipping {provider_name} with {model_name} due to response containing a link.")
                 return None
@@ -92,8 +87,7 @@ def find_working_combo(messages):
     return "No active model/provider combination found."
 
 def chat(message):
-    # Three messages are used to check for response similarity
-    messages = ["Hello","How Are You", "Good Bye"]
+    messages = ["Hello", "How Are You", "Good Bye"]
     messages2 = [message]
     if os.path.exists(CACHE_FILE):
         try:
@@ -105,7 +99,8 @@ def chat(message):
                     return result
                 else:
                     os.remove(CACHE_FILE)
-        except:
+        except Exception as e:
+            print(f"[ERROR] Failed to read cache: {str(e)}")
             pass
     return find_working_combo(messages)
 
@@ -114,7 +109,10 @@ def chat_endpoint():
     message = request.args.get("message")
     if not message:
         return "Missing 'message' parameter", 400
-    return chat(message)
+    result = chat(message)
+    if isinstance(result, str) and result.startswith("No active model"):
+        return result, 500
+    return result
 
 if __name__ == '__main__':
     app.run(port=5000, host="0.0.0.0")
