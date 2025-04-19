@@ -100,7 +100,7 @@ def chat(message):
             with open(CACHE_FILE, "r") as f:
                 model_name, provider_name = f.read().strip().split("|")
                 print(f"Testing cached combo: {model_name} | {provider_name}")
-                result = test_combo(model_name, provider_name, messages)
+                result = test_combo(model_name, provider_name, [message])
                 if result:
                     return result
                 else:
