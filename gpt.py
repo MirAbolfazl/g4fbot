@@ -50,7 +50,7 @@ def test_combo(model_name, provider_name, messages):
             elapsed = time.time() - start_time
 
             # If the response took more than 5 seconds or timed out, skip it
-            if elapsed > 5:
+            if elapsed > 20:
                 print(f"Skipping {provider_name} with {model_name} due to response timeout.")
                 return None
 
