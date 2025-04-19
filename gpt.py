@@ -94,13 +94,13 @@ def find_working_combo(messages):
 def chat(message):
     # Three messages are used to check for response similarity
     messages = [message, "How Are You", "Good Bye"]
-
+    messages2 = [message]
     if os.path.exists(CACHE_FILE):
         try:
             with open(CACHE_FILE, "r") as f:
                 model_name, provider_name = f.read().strip().split("|")
                 print(f"Testing cached combo: {model_name} | {provider_name}")
-                result = test_combo(model_name, provider_name, [message])
+                result = test_combo(model_name, provider_name, messages2)
                 if result:
                     return result
                 else:
