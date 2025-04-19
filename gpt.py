@@ -50,7 +50,7 @@ def test_combo(model_name, provider_name, messages):
             elapsed = time.time() - start_time
 
             # If the response took more than 5 seconds or timed out, skip it
-            if elapsed > 20:
+            if elapsed > 5:
                 print(f"Skipping {provider_name} with {model_name} due to response timeout.")
                 return None
 
@@ -93,7 +93,7 @@ def find_working_combo(messages):
 
 def chat(message):
     # Three messages are used to check for response similarity
-    messages = ["Hello" "How Are You", "Good Bye"]
+    messages = ["Hello","How Are You", "Good Bye"]
     messages2 = [message]
     if os.path.exists(CACHE_FILE):
         try:
