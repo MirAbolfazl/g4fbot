@@ -93,7 +93,7 @@ def find_working_combo(messages):
 
 def chat(message):
     # Three messages are used to check for response similarity
-    messages = [message, "How Are You", "Good Bye"]
+    messages = ["Hello" "How Are You", "Good Bye"]
     messages2 = [message]
     if os.path.exists(CACHE_FILE):
         try:
